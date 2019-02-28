@@ -11,12 +11,15 @@ from aqt.qt import *
 def testFunction():
     # get the number of cards in the current collection, which is stored in
     # the main window
-    cardCount = mw.col.cardCount()
+    dId = mw.col.decks.id("TEST DECK")
+    mw.moveToState("deckBrowser")
+    #mw.deckBrowser.refresh() # will crash program if not on browser already
+
     # show a message box
-    showInfo("Card count: %d" % cardCount)
+    showInfo("Deck id: %d" % dId)
 
 # create a new menu item, "test"
-action = QAction("test", mw)
+action = QAction("Run test", mw)
 # set it to call testFunction when it's clicked
 action.triggered.connect(testFunction)
 # and add it to the tools menu

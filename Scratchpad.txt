@@ -1,0 +1,46 @@
+This file is just me looking through the anki source code trying to figure
+out how to accomplish what I want. This may be inaccurate.
+
+Roughly how to add a card to a the current deck with current? model
+
+This is the method done for a single card. When importing, anki 
+adds a bunch of notes with a direct db insert and then calls gen cards
+
+It might be worth it to simply write a custom anki importer. Though this would
+not allow the granular update functionality I am considering for later.
+
+
+# seems we need to set all the fields to a default
+    note = self.mw.col.newNote()
+        flds = note.model()['flds']
+        # copy fields from old note
+        if oldNote:
+            if not keep:
+                self.removeTempNote(oldNote)
+            for n in range(len(note.fields)):
+                try:
+                    if not keep or flds[n]['sticky']:
+                        note.fields[n] = oldNote.fields[n]
+                    else:
+                        note.fields[n] = ""
+                except IndexError:
+                    break
+
+# required?
+note.model()['did'] = self.deckChooser.selectedId()
+
+
+cards = col.addNote(note) # assuming for now this creates cards
+if not cards:
+    # do something if no return
+
+col.autosave # writes db transaction and opens a new one if 5 mins has elapsed
+
+
+=====================
+HOW DO I CREATE A NEW DECK?
+
+# could it be this simple? seems so
+# where deck = "Name of Deck"
+# but what checks are there if I enter invalid deck names?
+id = self.mw.col.decks.id(deck)
