@@ -44,3 +44,16 @@ HOW DO I CREATE A NEW DECK?
 # where deck = "Name of Deck"
 # but what checks are there if I enter invalid deck names?
 id = self.mw.col.decks.id(deck)
+
+
+
+=======
+how to unzip a docx
+
+>>> import zipfile
+>>> z = zipfile.ZipFile("yourDocInDocx.docx")
+>>> "someText" in z.read("word/document.xml")
+True
+>>> "random other string" in z.read("word/document.xml")
+False
+>>> z.close()
