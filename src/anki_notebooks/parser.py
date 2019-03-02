@@ -1,6 +1,7 @@
 from zipfile import ZipFile, is_zipfile
 import xml.etree.ElementTree as ET
 
+
 # returns string representing content of docx internal file document.xml or None on failure
 # given string path to a .docx file
 def unzipDoc(path):
