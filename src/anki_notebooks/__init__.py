@@ -4,8 +4,21 @@ from aqt import mw
 from aqt.utils import showInfo, showText, tooltip
 # import all of the Qt GUI library
 from aqt.qt import *
+import anki.importing as importing
+from .parser import parseXml
+from .importer import DocImporter, unzipDoc
 
-from .parser import unzipDoc, parseXml
+# add our importer to the list
+# except without the multi-lingualism
+importing.Importers = importing.Importers + (("Word Document (*.docx)", DocImporter),)
+
+#(
+#    (_("Text separated by tabs or semicolons (*)"), TextImporter),
+#    (_("Packaged Anki Deck/Collection (*.apkg *.colpkg *.zip)"), AnkiPackageImporter),
+#    (_("Mnemosyne 2.0 Deck (*.db)"), MnemosyneImporter),
+#    (_("Supermemo XML export (*.xml)"), SupermemoXmlImporter),
+#    (_("Pauker 1.8 Lesson (*.pau.gz)"), PaukerImporter),
+#    )
 
 
 # We're going to add a menu item below. First we want to create a function to
@@ -30,11 +43,11 @@ def createDeck():
     showInfo("Deck id: %d" % dId)
 
 # create a new menu item, "test"
-action = QAction("Run test", mw)
-# set it to call testFunction when it's clicked
-action.triggered.connect(testFunction)
-# and add it to the tools menu
-mw.form.menuTools.addAction(action)
+# action = QAction("Run test", mw)
+# # set it to call testFunction when it's clicked
+# action.triggered.connect(testFunction)
+# # and add it to the tools menu
+# mw.form.menuTools.addAction(action)
 
 # presents file picker and returns user filepath
 def openDoc():

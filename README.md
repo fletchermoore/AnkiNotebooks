@@ -1,12 +1,42 @@
-AnkiNotebooks
+AnkiNotebooks 
 ===
 
-This is currently a non-functional skeleton for a project idea:
+Currently, this adds an Import option to Anki for Word documents in DOCX format.
 
-1. Export anki decks to .docx files
-2. Import .docx files to anki
-3. Synchronize decks and docx files in real time.
+Bullet lists within the Word document are converted to flashcards. This is so that you can
+create a bunch of flash cards in Word, more quickly than typing them individually into Anki
 
-The goal is so that one can create, edit, and read flashcards in Word or other software.
+The deepest list item becomes the back of the card. The path down becomes the front.
 
-The format of the .docx file is in a conceptual stage at this point and subject to change.
+Example:
+* ganglioglioma
+  - intramedullary
+    * ddx
+      - ependymoma
+      - astrocystoma
+    * margins
+      - circumscribed
+
+becomes:
+
+Front: ganglioglioma: intramedullary: ddx 
+
+Back: ependymoma(line breaks) astrocystoma
+
+Front: ganglioglioma: intramedullary: margins
+
+Back: circumscribed
+
+---
+
+This is alpha software and minimal effort has been put into validating the docx file format.
+It should fail peacefully, however.
+
+TODO
+----
+- create a unique model for the cards and improve css styling
+- word styling to html
+- import media from word documents
+- export to word option
+- eventually option to sync word docs against collection
+- support for odt

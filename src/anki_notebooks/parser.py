@@ -1,29 +1,12 @@
-from zipfile import ZipFile, is_zipfile
+
 import xml.etree.ElementTree as ET
 import re
 
 
-# returns string representing content of docx internal file document.xml or None on failure
-# given string path to a .docx file
-def unzipDoc(path):
-    if is_zipfile(path) == False:
-        showInfo('Unable to open selected file (filepath not found).')
-        return None
-    z = None
-    doc = None
-    try:
-        z = ZipFile(path)
-        doc = z.read('word/document.xml')
-        # is this closed properly on failure?
-    except:
-        showInfo('Unable to open selected file (unzip/read failed).')
-    #    print 'failed to open zip file or read \'content.xml\''
-        z.close()
-        return None
-    z.close()
-    return doc
 
 
+
+# unused; delete?
 def addLine(logStr, msg):
     return logStr + msg + "\n"
 
@@ -35,31 +18,61 @@ def getNamespace(element):
     return m.group(0) if m else ''
 
 
-# does not work; delete later
-def printNamespace(xmlStr):
-    root = ET.fromstring(xmlStr)
-    # assume we are the document tag
-    print("Finding namespace...")
-    print(root.attrib)
-    #print(root.get('xmlns:w'))
-
-
 # expects xml string read from docx file
-# return parsed content string (currently nebulus)
+# returns this structure, representing the document bullet lists
+# [
+#    ["path", "to", "terminal", "leaf"],
+#    ["path", "to", "leaf2"],
+#    ["path", "leaf3" ]
+# ]
+# reflecting a list in the document, which for example would look like
+#     - path
+#         * to
+#             > terminal
+#                 - leaf
+#             > leaf2
+#         * leaf3
 def parseXml(xmlStr):
     root = ET.fromstring(xmlStr)
     # how to check this is valid?
-    
     namespace = ""
-    out = ""
+    out = []
+    currPath = []
+    prevIndent = -1
     for child in root:
-        namespace = getNamespace(child)
-        out = addLine(out, child.tag) # body tag
+        namespace = getNamespace(child) #extract from body tag
         for grandchild in child: 
             # p tags
-            paragraphText = parseParagraph(grandchild, namespace)
-            out = addLine(out, paragraphText)
+            currIndent, textContent = parseParagraph(grandchild, namespace)
+            # am I going to be able to comprehend the following logic in a few years...?
+            # adding paths to the output only if we are at a terminal leaf
+            # we know we are at a terminal leaf because the previous indent is 
+            # equal or greater. after the loop exits we add whatever is left over.
+            if currIndent > prevIndent and currIndent > -1:
+                currPath.append(textContent)
+            elif currIndent == prevIndent and currIndent > 0:
+                # if depth is at least 2 elements
+                out = addPath(out, currPath, currIndent, prevIndent, textContent)
+                currPath = currPath[0:-1] # remove the last string
+                currPath.append(textContent) # replace with the new one
+            elif currIndent == -1: # if paragraph, then not a part of list
+                out = addPath(out, currPath, currIndent, prevIndent, textContent)
+                currPath = [] # empty the path
+            else: # currIndent is less than previous, but > -1
+                out = addPath(out, currPath, currIndent, prevIndent, textContent)
+                stepSize = (currIndent - prevIndent) - 1 # negative number result
+                currPath = currPath[0:stepSize]
+                currPath.append(textContent)
+            prevIndent = currIndent # ready to loop
+        out = addPath(out, currPath, currIndent, prevIndent, textContent)
     return out
+
+# mostly for debugging
+# appends currPath to allPaths and prints to terminal
+def addPath(allPaths, currPath, currIndent, prevIndent, textContent):
+    #print(currIndent, ': ', textContent, currPath, prevIndent)
+    allPaths.append(currPath)
+    return allPaths
 
 
 # current unused
@@ -81,8 +94,8 @@ def rText(rXml, namespace):
             text += child.text
     return text
 
-# except xml node for w:Pr
-# returns indent level or None
+# expect xml node for w:Pr
+# returns int indent level value or -1
 def parseIndentLevel(prXml, namespace):
     numPrTag = namespace + 'numPr'
     ilvlTag = namespace + 'ilvl'
@@ -91,15 +104,19 @@ def parseIndentLevel(prXml, namespace):
         if child.tag == numPrTag:
             for grandchild in child:
                 if grandchild.tag == ilvlTag:                    
-                    return grandchild.get(valAttr)
-    return None
+                    valStr = grandchild.get(valAttr)
+                    try:
+                        return int(valStr)
+                    except:
+                        return -1
+    return -1
 
 
 # expects ET xml for w:p tag
-# returns text content
+# returns (int indentLevel, "textual content")
 def parseParagraph(pChildXml, namespace):
     textContent = ""
-    indentLevel = None
+    indentLevel = -1
     rTag = namespace + 'r'
     pPrTag = namespace + 'pPr'
     for child in pChildXml:
@@ -110,9 +127,7 @@ def parseParagraph(pChildXml, namespace):
         elif tag == pPrTag:
             indentLevel = parseIndentLevel(child, namespace)
         # ignore all other paragraph children for now
-    if indentLevel == None:
-        return textContent
-    else:
-        return str(indentLevel) + ': ' + textContent
+    return (indentLevel, textContent)
+
 
 

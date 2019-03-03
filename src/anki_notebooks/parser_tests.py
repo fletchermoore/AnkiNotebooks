@@ -2,7 +2,9 @@
 # just so I don't have to launch Anki as I code
 
 
-from parser import unzipDoc, parseXml, printNamespace
+from parser import parseXml
+from importer import unzipDoc
+from cards import genCards
 import os
 
 def getPath():
@@ -10,20 +12,24 @@ def getPath():
     path = os.path.abspath(os.path.join(currentDir, '../../sample_docs/spine 1.docx'))
     return path
 
-def testFindNs(xmlContentStr):
-    printNamespace(xmlContentStr)
-
 
 def testParser():
     path = getPath()
     xmlContentStr = unzipDoc(path)
     if xmlContentStr != None:
-        testMainParser(xmlContentStr)
-        #testFindNs(xmlContentStr)
+        pathList = testMainParser(xmlContentStr)
+        cards = genCards(pathList)
+        printList(cards)
+
+
 
 def testMainParser(xmlContentStr):
-    log = parseXml(xmlContentStr)
-    print(log)
+    return parseXml(xmlContentStr)
+
+def printList(pathList):
+    for path in pathList:
+        print(str(path)) # path is a list of strings
+
 
 
 
