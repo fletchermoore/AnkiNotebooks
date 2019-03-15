@@ -6,25 +6,76 @@ import zipfile
 import shutil
 import xml.etree.ElementTree as ET
 
+# takes a list of tuples (ilvl, text)
+# returns an xml string representing the document w:body content
+def createDocument(bullets):
+    xmlFrags = []
+    for bullet in bullets:
+        xmlFrags.append(listItemXml(bullet[0], 2, bullet[1]))
+    xmlStr = joinElements(xmlFrags)
+    return getPrefix() + xmlStr + getPostfix()
 
-def createDocument():
-    contentTree = buildContentTree()
-    contentTreeStr = ET.tostring(contentTree, encoding="UTF-8").decode("UTF-8")
-    return getPrefix() + contentTreeStr + getPostfix()
+
+# takes a list of ET elements
+# returns a single xml string
+def joinElements(elemList):
+    result = ''
+    for elem in elemList:
+        result += ET.tostring(elem, encoding="UTF-8").decode("UTF-8")
+    return result
 
 
-def buildContentTree():
+def paragraphXml(text):
     p = ET.Element('w:p')
     r = ET.SubElement(p, 'w:r')
     t = ET.SubElement(r, 'w:t')
-    t.text = "This is nothing but a test."
+    t.text = text
+    return p
+
+def emptyParagraphXml():
+    return ET.Element('w:p')
+
+
+# reference xml:
+# <w:p w:rsidR="000308F2" w:rsidRDefault="000308F2" w:rsidP="000308F2">
+#     <w:pPr>
+#         <w:pStyle w:val="ListParagraph"/>
+#         <w:numPr>
+#             <w:ilvl w:val="1"/>
+#             <w:numId w:val="1"/>
+#         </w:numPr>
+#     </w:pPr>
+#     <w:r>
+#         <w:t>second point</w:t>
+#     </w:r>
+# </w:p>
+# 
+# numId 1 is a numbered list, numId 2 is a bullet list
+# this style is not intrinsic to word but defined by me in the 'numbering.xml' file
+def listItemXml(depth, numId, text):
+    p = ET.Element('w:p')
+    pPr = ET.SubElement(p, 'w:pPr')
+    pStyle = ET.SubElement(pPr, 'w:pStyle').set('w:val', 'ListParagraph')
+    numPr = ET.SubElement(pPr, 'w:numPr')
+    ilvl = ET.SubElement(numPr, 'w:ilvl').set('w:val', str(depth))
+    numId = ET.SubElement(numPr, 'w:numId').set('w:val', str(numId))
+    r = ET.SubElement(p, 'w:r')
+    t = ET.SubElement(r, 'w:t')
+    t.text = text
     return p
 
 
-
-
 def writeDoc():   
-    res = zip("blank10.docx") 
+    sampleContent = [
+        (0, "this"),
+        (1, "is"),
+        (2, "my"),
+        (3, "awesome"),
+        (2, "document"),
+        (1, "go home youre drunk")
+    ]
+    xml = createDocument(sampleContent)
+    res = zip("blank10.docx", xml) 
 
 
 # modified from stack overflow
@@ -32,13 +83,11 @@ def make_zipfile(output_filename, source_dir, documentData):
     relroot = source_dir #os.path.abspath(os.path.join(source_dir, os.pardir))
     try:
         zip = zipfile.ZipFile(output_filename, "w", zipfile.ZIP_DEFLATED)
-        print("after zip")
         for root, dirs, files in os.walk(source_dir):
             # add directory (needed for empty dirs)
             zip.write(root, os.path.relpath(root, relroot))
             for file in files:
                 if not (file[0] == '.' and file != '.rels'): # exclude .DS_Store and who knows what
-                    print(file)
                     filename = os.path.join(root, file)
                     if os.path.isfile(filename): # regular files only
                         arcname = os.path.join(os.path.relpath(root, relroot), file)
@@ -53,13 +102,11 @@ def make_zipfile(output_filename, source_dir, documentData):
 
 
 
-def zip(filename):
+def zip(filename, documentXml):
     ankiNotebookDir = os.path.dirname(os.path.realpath(__file__))
     docFragPath = os.path.join(ankiNotebookDir, 'res', 'doc_frags')
     try:
-        documentData = createDocument()
-        print(documentData)
-        make_zipfile(filename, docFragPath, documentData)
+        make_zipfile(filename, docFragPath, documentXml)
         return True
     except:
         print("Failed to create .docx archive.")
