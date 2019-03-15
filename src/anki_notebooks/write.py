@@ -65,17 +65,19 @@ def listItemXml(depth, numId, text):
     return p
 
 
-def writeDoc():   
-    sampleContent = [
-        (0, "this"),
-        (1, "is"),
-        (2, "my"),
-        (3, "awesome"),
-        (2, "document"),
-        (1, "go home youre drunk")
-    ]
-    xml = createDocument(sampleContent)
-    res = zip("blank10.docx", xml) 
+# takes list of bullets for bullet point list
+# with the tumple (ilvl, text)
+# sampleBullets = [
+#     (0, "this"),
+#     (1, "is"),
+#     (2, "my"),
+#     (3, "awesome"),
+#     (2, "document"),
+#     (1, "go home youre drunk")
+# ]
+def writeDoc(filename, bullets):   
+    xml = createDocument(bullets)
+    res = zip(filename, xml) 
 
 
 # modified from stack overflow

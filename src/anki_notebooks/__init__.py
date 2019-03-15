@@ -5,8 +5,11 @@ from aqt.utils import showInfo, showText, tooltip
 # import all of the Qt GUI library
 from aqt.qt import *
 import anki.importing as importing
+import anki.exporting as exporting
+from anki.hooks import runHook
 from .parser import parseXml
 from .importer import DocImporter, unzipDoc
+from .exporter import DocExporter
 
 # add our importer to the list
 # except without the multi-lingualism
@@ -19,6 +22,36 @@ importing.Importers = importing.Importers + (("Word Document (*.docx)", DocImpor
 #    (_("Supermemo XML export (*.xml)"), SupermemoXmlImporter),
 #    (_("Pauker 1.8 Lesson (*.pau.gz)"), PaukerImporter),
 #    )
+
+
+# add our exporter to the list
+# original exporter def
+# def exporters():
+#     def id(obj):
+#         return ("%s (*%s)" % (obj.key, obj.ext), obj)
+#     exps = [
+#         id(AnkiCollectionPackageExporter),
+#         id(AnkiPackageExporter),
+#         id(TextNoteExporter),
+#         id(TextCardExporter),
+#     ]
+#     runHook("exportersList", exps)
+#     return exps
+def updatedExporters():
+    def id(obj):
+        return ("%s (*%s)" % (obj.key, obj.ext), obj)
+    exps = [
+        id(exporting.AnkiCollectionPackageExporter),
+        id(exporting.AnkiPackageExporter),
+        id(exporting.TextNoteExporter),
+        id(exporting.TextCardExporter),
+        id(DocExporter)
+    ]
+    runHook("exportersList", exps)
+    return exps      
+
+exporting.exporters = updatedExporters
+
 
 
 # We're going to add a menu item below. First we want to create a function to
