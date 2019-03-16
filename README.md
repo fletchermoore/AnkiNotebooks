@@ -27,16 +27,18 @@ Front: ganglioglioma: intramedullary: margins
 
 Back: circumscribed
 
----
 
-This is alpha software and minimal effort has been put into validating the docx file format.
-It should fail peacefully, however.
+Export
+------
+Export to Word option added. Currently this simply functions like the export to tab separated text file, except it exports
+as a bullet list in word.
+
+
 
 TODO
 ----
 - create a unique model for the cards and improve css styling
 - word styling to html
 - import media from word documents
-- export to word option
 - eventually option to sync word docs against collection
 - support for odt
