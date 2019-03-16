@@ -1,5 +1,6 @@
 from anki.exporting import Exporter
 from .write import writeDoc
+from .paths import escapedCardToPath, pathsToBullets
 import re
 
 class DocExporter(Exporter):
@@ -16,19 +17,33 @@ class DocExporter(Exporter):
         writeDoc(path, bullets)
 
 
+    def escapeText(self, text):
+        "Escape newlines, tabs, CSS."
+        # fixme: we should probably quote fields with newlines
+        # instead of converting them to spaces
+        text = text.replace("\n", " ")
+        text = text.replace("\t", " " * 8)
+        text = re.sub("(?i)<style>.*?</style>", "", text)
+        text = re.sub(r"\[\[type:[^]]+\]\]", "", text)
+        # if "\"" in text:
+        #     text = "\"" + text.replace("\"", "\"\"") + "\""
+        return text
+
+
     def createBullets(self):
         ids = sorted(self.cardIds())
-        bullets = []
         def esc(s):
             # strip off the repeated question in answer if exists
             s = re.sub("(?si)^.*<hr id=answer>\n*", "", s)
             return self.escapeText(s)
+        paths = []
         for cid in ids:
-            c = self.col.getCard(cid)
-            question = (0, esc(c.q()))
-            bullets.append(question)
-            answer = (1, esc(c.a()))
-            bullets.append(answer)
+            c = self.col.getCard(cid)            
+            question = esc(c.q())            
+            answer = esc(c.a())
+            path = escapedCardToPath(question, answer)
+            paths.append(path)
+        bullets = pathsToBullets(paths)
         return bullets
 
 
@@ -40,24 +55,3 @@ class DocExporter(Exporter):
         self.count = len(cids)
         return cids
 
-    # from Exporter
-    # def exportInto(self, path):
-    #     self._escapeCount = 0
-    #     file = open(path, "wb")
-    #     self.doExport(file)
-    #     file.close()
-
-    # not called
-    def doExport(self, file):
-        ids = sorted(self.cardIds())
-        strids = ids2str(ids)
-        def esc(s):
-            # strip off the repeated question in answer if exists
-            s = re.sub("(?si)^.*<hr id=answer>\n*", "", s)
-            return self.escapeText(s)
-        out = ""
-        for cid in ids:
-            c = self.col.getCard(cid)
-            out += esc(c.q())
-            out += "\t" + esc(c.a()) + "\n"
-        file.write(out.encode("utf-8"))
