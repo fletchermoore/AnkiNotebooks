@@ -2,7 +2,7 @@ AnkiNotebooks
 ===
 
 The ultimate goal of this project is so that I can quickly add and update
-large sets of flashcards via MS Word. You may find it helpful if you are studying
+large sets of flashcards via Microsoft Word. You may find it helpful if you are studying
 for medical school tests or the like, since creating the flashcards as I show
 in my example is vastly faster than individually adding them to Anki. I can
 almost create them real-time during a lecture (with some editing afterwards).
@@ -24,17 +24,17 @@ Example:
 
 becomes:
 
-Card 1  
-  
+**Card 1**
+
 ganglioglioma: intramedullary: ddx 
--  
+
 ependymoma  
 astrocystoma
 
-Card 2  
-  
+**Card 2**
+
 ganglioglioma: intramedullary: margins
--    
+
 circumscribed
 
 
@@ -52,7 +52,7 @@ Adds a export option "Cards as Word document". This will currently perfectly rev
 
 Warning
 -------
-I have not yet extensively tested this. It is working for me with my current version of Word (1902) on the latest OSX (as of 3/16/19) and Windows 10. 
+I have not yet extensively tested this. There are likely unancipated issues. It is working for me with my current version of Word (1902) on the latest OSX (as of 3/16/19) and Windows 10. 
 
 
 TODO
