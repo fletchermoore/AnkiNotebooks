@@ -9,7 +9,7 @@ def genCards(pathList):
         if length > 1:
             front = ': '.join(path[:length-1])
             back = path[-1]
-            cards.append((front, back))
+            cards.append((front.strip(), back.strip()))
     cards = reverseMarkedCards(cards)
     cards = consolidateCards(cards)
     return cards
@@ -34,23 +34,16 @@ def reverseMarkedCards(cards):
 
 # expects a list of tuples
 # returns a list of tuples
-# cards with same front are joined into a single card
+# ADJACENT cards with same front are joined into a single card
 def consolidateCards(cards):
     shorterList = []
+    prevCard = ('', '')
     for card in cards:
-        index = findIndex(shorterList, card)
-        if index > -1:
+        if card[0] == prevCard[0]:
             #print("found dupplicate: ", str(card))
-            preexistingCard = shorterList[index]
-            shorterList[index] = (preexistingCard[0], preexistingCard[1] + '<br/><br/>' + card[1])
+            prevCard = shorterList[-1]
+            shorterList[-1] = (prevCard[0], prevCard[1] + '<br/><br/>' + card[1])
         else:
             shorterList.append(card)
+            prevCard = card
     return shorterList
-
-
-def findIndex(list, targetCard):
-    for key, card in enumerate(list):
-        if card[0] == targetCard[0]:
-            return key
-    return -1
-

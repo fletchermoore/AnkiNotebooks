@@ -14,6 +14,9 @@ text is ignored.
 The deepest list item(s) becomes the back of the card. The path down becomes the front.
 
 Example:
+
+* anki-tags
+  - neuro peds tumors
 * ganglioglioma
   - intramedullary
     * ddx
@@ -49,6 +52,10 @@ Markup
 ------
 If the deepest item starts with "<<", the generated card
 will be reversed, as Card 3 above.
+
+If you create a pseduo-card with front "anki-tags" (case sensitive) and back being a string of tags
+in Anki format (each separate word becomes a tag), those tags are applied to all subsequent cards.
+In the example above, every generated card would be tagged with "neuro peds tumors".
 
 
 

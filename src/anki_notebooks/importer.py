@@ -81,10 +81,15 @@ class DocImporter(NoteImporter):
 def cardsToForeignNotes(cards):
     # card shape is ('front', 'back')
     notes = []
+    current_tags = []
     for card in cards:
-        note = ForeignNote()
-        note.fields = [ card[0], card[1] ]
-        notes.append(note)
+        if card[0] == 'anki-tags':
+            current_tags = card[1].split(' ')
+        else:
+            note = ForeignNote()
+            note.fields = [ card[0], card[1] ]
+            note.tags = current_tags
+            notes.append(note)
     return notes
 
 
