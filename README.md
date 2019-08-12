@@ -21,6 +21,7 @@ Example:
       - astrocystoma
     * margins
       - circumscribed
+    * << pediatric brain mass that presents with temporal lobe epilepsy
 
 becomes:
 
@@ -37,6 +38,19 @@ ganglioglioma: intramedullary: margins
 
 circumscribed
 
+**Card 3**
+
+pediatric brain mass that presents with temporal lobe epilepsy
+
+ganglioglioma
+
+
+Markup
+------
+If the deepest item starts with "<<", the generated card
+will be reversed, as Card 3 above.
+
+
 
 Import
 ------
@@ -47,7 +61,8 @@ Allow HTML must be checked or else you'll get escaped HTML in your cards. For no
 
 Export
 ------
-Adds a export option "Cards as Word document". This will currently perfectly reverse the import if the cards were created as in the example. For all other cards, the front of the card becomes the top level indent and the back becomes the second level indent.
+Adds a export option "Cards as Word document". The front of the card becomes the top level indent and the back becomes the second level indent. If card front has the format "x: y: z", these levels become nested.
+
 
 
 Warning
