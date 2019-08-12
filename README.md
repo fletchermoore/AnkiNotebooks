@@ -42,7 +42,7 @@ circumscribed
 
 pediatric brain mass that presents with temporal lobe epilepsy
 
-ganglioglioma
+ganglioglioma: intramedullary
 
 
 Markup
