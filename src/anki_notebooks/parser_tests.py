@@ -2,8 +2,7 @@
 # just so I don't have to launch Anki as I code
 
 
-from parser import parseXml
-from importer import unzipDoc
+from doc_parser import parseXml, unzipDoc
 from cards import genCards
 import os
 
@@ -29,8 +28,6 @@ def testMainParser(xmlContentStr):
 def printList(pathList):
     for path in pathList:
         print(str(path)) # path is a list of strings
-
-
 
 
 

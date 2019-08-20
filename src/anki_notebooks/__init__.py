@@ -7,8 +7,8 @@ from aqt.qt import *
 import anki.importing as importing
 import anki.exporting as exporting
 from anki.hooks import runHook
-from .parser import parseXml
-from .importer import DocImporter, unzipDoc
+from .doc_parser import parseXml, unzipDoc
+from .importer import DocImporter
 from .exporter import DocExporter
 
 # add our importer to the list

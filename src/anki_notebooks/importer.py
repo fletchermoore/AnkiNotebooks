@@ -5,8 +5,8 @@
 
 from anki.importing.noteimp import NoteImporter, ForeignNote
 from aqt.utils import showInfo, showText, tooltip
-from zipfile import ZipFile, is_zipfile
-from .parser import parseXml
+
+from .doc_parser import parseXml, unzipDoc
 from .cards import genCards
 
 
@@ -93,22 +93,3 @@ def cardsToForeignNotes(cards):
     return notes
 
 
-# returns string representing content of docx internal file document.xml or None on failure
-# given string path to a .docx file
-def unzipDoc(path):
-    if is_zipfile(path) == False:
-        showInfo('Unable to open selected file (filepath not found).')
-        return None
-    z = None
-    doc = None
-    try:
-        z = ZipFile(path)
-        doc = z.read('word/document.xml')
-        # is this closed properly on failure?
-    except:
-        showInfo('Unable to open selected file (unzip/read failed).')
-    #    print 'failed to open zip file or read \'content.xml\''
-        z.close()
-        return None
-    z.close()
-    return doc
