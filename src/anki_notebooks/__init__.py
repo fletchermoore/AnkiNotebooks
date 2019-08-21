@@ -7,7 +7,6 @@ from aqt.qt import *
 import anki.importing as importing
 import anki.exporting as exporting
 from anki.hooks import runHook
-from .doc_parser import parseXml, unzipDoc
 from .importer import DocImporter
 from .exporter import DocExporter
 
@@ -57,14 +56,14 @@ exporting.exporters = updatedExporters
 # We're going to add a menu item below. First we want to create a function to
 # be called when the menu item is activated.
 
-def testFunction():
-    # get the number of cards in the current collection, which is stored in
-    # the main window
-    path = openDoc()
-    xmlContentStr = unzipDoc(path)
-    if xmlContentStr != None:
-        log = parseXml(xmlContentStr)
-        showText(log)
+# def testFunction():
+#     # get the number of cards in the current collection, which is stored in
+#     # the main window
+#     path = openDoc()
+#     xmlContentStr = unzipDoc(path)
+#     if xmlContentStr != None:
+#         log = parseXml(xmlContentStr)
+#         showText(log)
 
 
 def createDeck():

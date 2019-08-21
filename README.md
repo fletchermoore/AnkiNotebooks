@@ -58,6 +58,10 @@ in Anki format (each separate word becomes a tag), those tags are applied to all
 In the example above, every generated card would be tagged with "neuro peds tumors".
 
 
+Media
+-----
+If you copy paste an image file INLINE (with text flowing around it) at the appropriate place in the bullet list, it will be imported to Anki and displayed. This feature is not extensively tested. Images are not currently exported from Anki.
+
 
 Import
 ------
@@ -68,7 +72,7 @@ Allow HTML must be checked or else you'll get escaped HTML in your cards. For no
 
 Export
 ------
-Adds a export option "Cards as Word document". The front of the card becomes the top level indent and the back becomes the second level indent. If card front has the format "x: y: z", these levels become nested.
+Adds a export option "Cards as Word document". The front of the card becomes the top level indent and the back becomes the second level indent. If card front has the format "x: y: z", these levels become nested. Images are not exported.
 
 
 
@@ -81,6 +85,5 @@ TODO
 ----
 - create a unique model for the cards and improve css styling
 - word styling to html
-- import media from word documents
-- eventually option to sync word docs against collection
-- support for odt (maybe never)
+- eventually option to sync word docs against collection (maybe....)
+- support for odt (probably never)

@@ -5,9 +5,9 @@
 
 from anki.importing.noteimp import NoteImporter, ForeignNote
 from aqt.utils import showInfo, showText, tooltip
-
-from .doc_parser import parseXml, unzipDoc
+from .doc_parser_exp import parseDocx
 from .cards import genCards
+import os
 
 
 class DocImporter(NoteImporter):
@@ -19,7 +19,26 @@ class DocImporter(NoteImporter):
         self.fileobj = None
         #self.delimiter = None
         self.tagsToAdd = [] # ? do I need this too?
+        self.imgList = {}
 
+    
+    # just add the media to the collection, no questions asked
+    # called by run
+    def importMedia(self):
+        for filename in self.imgList:
+            blob = self.imgList[filename]
+            path = os.path.join(self.col.media.dir(), filename)
+            if not os.path.exists(path):
+                with open(path, "wb") as f:
+                    f.write(blob)
+
+    # parent run calls
+    # c = foreignNotes()
+    # and then importNotes(c)
+    # we are going to add import media to the end for 
+    def run(self):
+        super().run() # call parent run
+        self.importMedia()
 
     # ? requied inherited method
     # returns list of ForeignNotes, which get inserted by the parent class
@@ -30,7 +49,7 @@ class DocImporter(NoteImporter):
         notes = []
 
         if self.fileobj != None:
-            pathList = parseXml(self.fileobj)
+            pathList, self.imgList = parseDocx(self.file)
             cards = genCards(pathList)
             notes = cardsToForeignNotes(cards)
             #printList(cards)
@@ -49,33 +68,14 @@ class DocImporter(NoteImporter):
             self.openFile()
 
     def openFile(self):
-        self.fileobj = unzipDoc(self.file)
-        # self.dialect = None
-        # self.fileobj = open(self.file, "r", encoding='utf-8-sig')
-        # self.data = self.fileobj.read()
-        # def sub(s):
-        #     return re.sub("^\#.*$", "__comment", s)
-        # self.data = [sub(x)+"\n" for x in self.data.split("\n") if sub(x) != "__comment"]
-        # if self.data:
-        #     if self.data[0].startswith("tags:"):
-        #         tags = str(self.data[0][5:]).strip()
-        #         self.tagsToAdd = tags.split(" ")
-        #         del self.data[0]
-        #     self.updateDelimiter()
-        # if not self.dialect and not self.delimiter:
-        #     raise Exception("unknownFormat")
+        self.fileobj = self.file # just storing the file name instead of doing
+                                    # any kind of file opening which is done in
+                                    # parseDocx
 
 
     # ? required inherited method
     def fields(self):
         return 2
-
-    # ? not required
-    # def noteFromFields(self, fields):
-    #     note = ForeignNote()
-    #     note.fields.extend([x for x in fields])
-    #     note.tags.extend(self.tagsToAdd)
-    #     return note
 
 
 def cardsToForeignNotes(cards):

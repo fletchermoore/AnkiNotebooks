@@ -57,3 +57,8 @@ True
 >>> "random other string" in z.read("word/document.xml")
 False
 >>> z.close()
+
+
+========
+import image directory?
+mw.col.media.dir()
